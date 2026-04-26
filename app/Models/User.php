@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -19,22 +18,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role', // tambahkan role
-];
-
-// Method untuk cek role
-public function isAdmin()
-{
-    return $this->role === 'admin';
-}
-
-public function isSuperAdmin()
-{
-    return $this->role === 'superadmin';
-}
+        'name',
+        'email',
+        'password',
+        'role',
+        'company_id', // Tambahan untuk memetakan user ke perusahaan tertentu
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -57,5 +46,40 @@ public function isSuperAdmin()
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // --- RELASI ---
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    // --- PENGECEKAN ROLE ---
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'superadmin';
+    }
+
+    public function isAdmin()
+    {
+        return in_array($this->role, ['admin', 'company_admin']);
+    }
+
+    public function isGlobalHR()
+    {
+        return in_array($this->role, ['superadmin', 'hr_global']);
+    }
+
+    // Validasi tambahan untuk mengakomodasi assignment layout dashboard level manajemen
+    public function isGM()
+    {
+        return $this->role === 'GM';
+    }
+
+    public function isManager()
+    {
+        return $this->role === 'Manager';
     }
 }

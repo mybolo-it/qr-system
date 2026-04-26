@@ -14,10 +14,15 @@ class Item extends Model
         'nama',
         'deskripsi',
         'file_path',
-        'letterhead',   // <-- tambahkan kolom letterhead
+        'letterhead',
         'token',
         'views',
+        'company_id',  // Relasi ke anak perusahaan yang menerbitkan dokumen
+        'category_id', // Kategori dokumen (misal: SK, Memo)
+        'status',      // Status dokumen (draft, published, dll)
     ];
+
+    // --- ACCESSORS ---
 
     /**
      * Accessor untuk URL file dokumen
@@ -32,7 +37,6 @@ class Item extends Model
      */
     public function getLetterheadUrlAttribute()
     {
-        // Jika letterhead tidak null, kembalikan URL-nya
         return $this->letterhead ? asset('storage/' . $this->letterhead) : null;
     }
 
@@ -42,5 +46,22 @@ class Item extends Model
     public function getDetailUrlAttribute()
     {
         return route('item.show', $this->token);
+    }
+
+    // --- RELASI ---
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function scanLogs()
+    {
+        return $this->hasMany(ItemScanLog::class);
     }
 }

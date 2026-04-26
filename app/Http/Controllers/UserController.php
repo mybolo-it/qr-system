@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Company; // Pastikan ini ditambahkan
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -12,13 +13,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->paginate(10);
-        return view('users.index', compact('users'));
-    }
+        // Ambil data user beserta relasinya jika ada (opsional tapi disarankan)
+        $users = User::with('company')->latest()->paginate(10);
 
-    public function create()
-    {
-        return view('users.create');
+        // Ambil data master perusahaan untuk mengisi dropdown
+        $companies = Company::all();
+
+        return view('users.index', compact('users', 'companies'));
     }
 
     public function store(Request $request)
@@ -27,7 +28,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'role' => 'required|in:admin,superadmin',
+            'role' => 'required|in:admin,company_admin,superadmin', // Disesuaikan dengan opsi di form
+            'company_id' => 'nullable|exists:companies,id', // Validasi company_id
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Alamat email tidak boleh kosong.',
@@ -35,7 +37,8 @@ class UserController extends Controller
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal harus 6 karakter.',
-            'role.required' => 'Silakan pilih role pengguna.',
+            'role.required' => 'Silakan pilih peran pengguna.',
+            'company_id.exists' => 'Perusahaan yang dipilih tidak valid.',
         ]);
 
         User::create([
@@ -43,47 +46,37 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'company_id' => $request->company_id, // Simpan company_id
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User baru berhasil ditambahkan.');
-    }
-
-    public function edit($encryptedId)
-    {
-        // Pastikan hanya superadmin yang bisa mengakses
-        if (auth()->user()->role !== 'superadmin') {
-            abort(403, 'Anda tidak memiliki izin.');
-        }
-        try {
-            $id = Crypt::decrypt($encryptedId);
-        } catch (DecryptException $e) {
-            abort(404, 'ID tidak valid.');
-        }
-        $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        return redirect()->route('users.index')->with('success', 'Pengguna baru berhasil ditambahkan.');
     }
 
     public function update(Request $request, $encryptedId)
     {
         if (auth()->user()->role !== 'superadmin') {
-            abort(403);
+            abort(403, 'Anda tidak memiliki izin.');
         }
+
         try {
             $id = Crypt::decrypt($encryptedId);
         } catch (DecryptException $e) {
-            abort(404);
+            abort(404, 'ID tidak valid.');
         }
+
         $user = User::findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,superadmin',
+            'role' => 'required|in:admin,company_admin,superadmin',
+            'company_id' => 'nullable|exists:companies,id',
             'password' => 'nullable|min:6|confirmed',
         ], [
             'name.required' => 'Nama wajib diisi.',
-            'email.unique' => 'Email sudah digunakan oleh user lain.',
-            'role.required' => 'Role wajib dipilih.',
+            'email.unique' => 'Email sudah digunakan oleh pengguna lain.',
+            'role.required' => 'Peran wajib dipilih.',
+            'company_id.exists' => 'Perusahaan yang dipilih tidak valid.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password.min' => 'Password minimal harus 6 karakter.',
         ]);
@@ -92,6 +85,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
+            'company_id' => $request->company_id, // Update company_id
         ];
 
         if ($request->filled('password')) {
@@ -100,25 +94,29 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui.');
+        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
     public function destroy($encryptedId)
     {
         if (auth()->user()->role !== 'superadmin') {
-            abort(403);
+            abort(403, 'Anda tidak memiliki izin.');
         }
+
         try {
             $id = Crypt::decrypt($encryptedId);
         } catch (DecryptException $e) {
-            abort(404);
+            abort(404, 'ID tidak valid.');
         }
+
         $user = User::findOrFail($id);
 
         if ($user->id === auth()->id()) {
-            return redirect()->route('users.index')->with('error', 'Anda tidak dapat menghapus akun sendiri.');
+            return redirect()->route('users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
+
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
+
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus dari sistem.');
     }
 }

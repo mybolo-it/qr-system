@@ -26,6 +26,17 @@ class UserSeeder extends Seeder
             ]
         );
 
+        User::firstOrCreate(
+            ['email' => 'jay@mybolo.id'],
+            [
+                'name' => 'Super Admin',
+                'email_verified_at' => now(),
+                'password' => Hash::make('Kalang123#'),
+                'role' => 'superadmin',
+                'remember_token' => Str::random(10),
+            ]
+        );
+
         // Bisa tambahkan admin biasa
         User::firstOrCreate(
             ['email' => 'admin@example.com'],
