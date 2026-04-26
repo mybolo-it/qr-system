@@ -6,7 +6,7 @@ use App\Models\Item;
 use App\Models\Category;
 use App\Models\Company;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 class DocumentController extends Controller
 {
     public function index(Request $request)
@@ -46,5 +46,27 @@ class DocumentController extends Controller
         $companies = Company::all();
 
         return view('admin.arsip', compact('items', 'categories', 'companies'));
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $item = \App\Models\Item::findOrFail($id);
+
+            // Hapus file dari server
+            if ($item->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->file_path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($item->file_path);
+            }
+
+            // Hapus dari database
+            $item->delete();
+
+            return redirect()->route('admin.arsip')->with('success', 'Dokumen berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Jika gagal, tangkap errornya dan tampilkan di layar
+            return redirect()
+                ->route('admin.arsip')
+                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
 }

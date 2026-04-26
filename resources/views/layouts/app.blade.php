@@ -113,7 +113,7 @@
                     @auth
                         <a href="{{ route('home') }}"
                             class="nav-link text-sm font-semibold text-slate-600 hover:text-indigo-600">Dashboard</a>
-                        <a href="{{ route('documents.index') }}"
+                        <a href="{{ route('admin.arsip') }}"
                             class="nav-link text-sm font-semibold text-slate-600 hover:text-indigo-600">Arsip Dokumen</a>
 
                         @if (auth()->user()->isAdmin() || auth()->user()->isGlobalHR())
@@ -131,13 +131,11 @@
 
                                 <div x-show="manageOpen" x-transition x-cloak
                                     class="absolute top-full mt-4 right-0 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 overflow-hidden z-50">
-                                    <a href="{{ route('admin.form') }}"
-                                        class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Penerbitan
-                                        Dokumen (QR)</a>
+                                  
 
                                     @if (auth()->user()->isGlobalHR())
                                         <div class="h-px bg-slate-100 my-1 mx-4"></div>
-                                        <a href="#"
+                                        <a href="{{ route('admin.kategori.index') }}"
                                             class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Kategori
                                             Dokumen</a>
                                         <a href="#"
@@ -213,7 +211,7 @@
                     @auth
                         <a href="{{ route('home') }}"
                             class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Dashboard</a>
-                        <a href="{{ route('documents.index') }}"
+                        <a href="{{ route('admin.arsip') }}"
                             class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Arsip
                             Dokumen</a>
 

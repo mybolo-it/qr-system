@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 
@@ -17,7 +18,9 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Halaman home hanya bisa diakses jika login
-Route::get('/', [PublicController::class, 'dashboard'])->name('home')->middleware('auth');
+Route::get('/', [PublicController::class, 'dashboard'])
+    ->name('home')
+    ->middleware('auth');
 
 Route::middleware(['auth', 'role:superadmin'])->group(function () {
     Route::resource('users', UserController::class);
@@ -28,8 +31,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/form', [AdminController::class, 'showForm'])->name('admin.form');
     Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/items', [AdminController::class, 'index'])->name('admin.items');
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/admin/arsip', [DocumentController::class, 'index'])->name('admin.arsip');
+    Route::delete('/admin/arsip/{id}', [DocumentController::class, 'destroy'])->name('admin.arsip.destroy');
+
+    // Modul Kategori Dokumen
+    Route::get('/admin/kategori', [\App\Http\Controllers\CategoryController::class, 'index'])->name('admin.kategori.index');
+    Route::post('/admin/kategori', [\App\Http\Controllers\CategoryController::class, 'store'])->name('admin.kategori.store');
+    Route::put('/admin/kategori/{id}', [\App\Http\Controllers\CategoryController::class, 'update'])->name('admin.kategori.update');
+    Route::delete('/admin/kategori/{id}', [\App\Http\Controllers\CategoryController::class, 'destroy'])->name('admin.kategori.destroy');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-   
 });
