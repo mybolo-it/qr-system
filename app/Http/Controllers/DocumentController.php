@@ -45,6 +45,6 @@ class DocumentController extends Controller
         $categories = Category::all();
         $companies = Company::all();
 
-        return view('documents.index', compact('items', 'categories', 'companies'));
+        return view('admin.arsip', compact('items', 'categories', 'companies'));
     }
 }

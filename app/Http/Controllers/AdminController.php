@@ -15,34 +15,36 @@ class AdminController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nama' => 'required|string|max:255',
-        'deskripsi' => 'nullable|string',
-        'file' => 'required|file|mimes:jpg,jpeg,png,gif,bmp,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar|max:5120',
-        'letterhead' => 'nullable|string|max:500', // teks kop surat
-    ]);
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'company_id' => 'required|exists:companies,id',
+            'status' => 'required|in:published,draft,revoked', // Validasi status
+            'file' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120',
+            'deskripsi' => 'nullable|string',
+        ]);
 
-    // Upload file dokumen
-    $path = $request->file('file')->store('uploads', 'public');
+        $path = $request->file('file')->store('uploads', 'public');
 
-    // Generate token unik
-    do {
-        $token = Str::random(32);
-    } while (Item::where('token', $token)->exists());
+        do {
+            $token = \Illuminate\Support\Str::random(32);
+        } while (\App\Models\Item::where('token', $token)->exists());
 
-    // Simpan ke database
-    Item::create([
-        'nama' => $request->nama,
-        'deskripsi' => $request->deskripsi,
-        'file_path' => $path,
-        'letterhead' => $request->letterhead, // simpan teks
-        'token' => $token,
-        'views' => 0,
-    ]);
+        \App\Models\Item::create([
+            'nama' => $request->nama,
+            'category_id' => $request->category_id,
+            'company_id' => $request->company_id,
+            'status' => $request->status, // Simpan status ke database
+            'deskripsi' => $request->deskripsi,
+            'file_path' => $path,
+            'letterhead' => $request->letterhead ?? null,
+            'token' => $token,
+            'views' => 0,
+        ]);
 
-    return redirect()->route('admin.form')->with('success', 'Data berhasil disimpan.');
-}
+        return redirect()->route('admin.arsip')->with('success', 'Dokumen berhasil diproses.');
+    }
     // Opsional: halaman untuk admin melihat semua item (bisa ditambahkan)
     public function index()
     {

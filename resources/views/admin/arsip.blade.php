@@ -109,7 +109,8 @@
         }
     </style>
 
-    <div class="w-full">
+    <div class="w-full" x-data="{ activeModal: '{{ old('_modal', '') }}' }">
+
         <div class="mb-8 animate__animated animate__fadeInDown">
             <div
                 class="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-indigo-600 via-indigo-800 to-slate-900 shadow-xl shadow-indigo-900/20 px-6 py-8 md:px-10 md:py-10 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-indigo-500/30">
@@ -141,8 +142,8 @@
 
                 @if (auth()->user()->isAdmin() || auth()->user()->isGlobalHR())
                     <div class="relative z-10 shrink-0 mt-4 md:mt-0">
-                        <a href="{{ route('admin.form') }}"
-                            class="group flex items-center justify-between gap-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white pl-6 pr-2 py-2 rounded-2xl text-sm font-bold shadow-lg transition-all active:scale-95">
+                        <button type="button" @click="activeModal = 'create'"
+                            class="group flex items-center justify-between gap-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white pl-6 pr-2 py-2 rounded-2xl text-sm font-bold shadow-lg transition-all active:scale-95 w-full md:w-auto">
                             <span class="tracking-wide">Terbitkan Dokumen</span>
                             <div
                                 class="bg-indigo-500/40 group-hover:bg-indigo-500/60 transition-colors p-3 rounded-xl border border-white/10 flex items-center justify-center">
@@ -151,7 +152,7 @@
                                         d="M12 4v16m8-8H4" />
                                 </svg>
                             </div>
-                        </a>
+                        </button>
                     </div>
                 @endif
             </div>
@@ -160,7 +161,6 @@
         <div class="glass-panel rounded-2xl p-5 mb-8 animate__animated animate__fadeIn">
             <form action="{{ route('documents.index') }}" method="GET"
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-
                 <div class="lg:col-span-2">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pencarian</label>
                     <div class="relative">
@@ -260,7 +260,6 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse($items as $index => $item)
                             <tr class="stagger-row hover:bg-slate-50/80 transition-colors">
-
                                 <td data-label="ID" class="px-6 py-4 text-sm font-bold text-slate-400">
                                     #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
                                 </td>
@@ -333,7 +332,7 @@
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </a>
-                                        <a href="{{ route('item.show', $item->token) }}"
+                                        <a href="{{ route('item.show', $item->token) }}" target="_blank"
                                             class="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg shadow-sm hover:shadow transition-all"
                                             title="Verifikasi QR">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -344,7 +343,6 @@
                                         </a>
                                     </div>
                                 </td>
-
                             </tr>
                         @empty
                             <tr>
@@ -372,5 +370,158 @@
                 </div>
             @endif
         </div>
+
+        <div x-show="activeModal === 'create'" x-cloak class="relative z-[100]" aria-labelledby="modal-title"
+            role="dialog" aria-modal="true">
+            <div x-show="activeModal === 'create'" x-transition.opacity
+                class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                    <div x-show="activeModal === 'create'" x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-3xl border border-slate-200">
+
+                        <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="_modal" value="create">
+
+                            <div class="bg-white px-6 pb-4 pt-6 sm:p-8">
+                                <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-slate-800" id="modal-title">Terbitkan
+                                            Dokumen Baru</h3>
+                                        <p class="text-sm text-slate-500 mt-1">Unggah dokumen ke dalam arsip sistem dan
+                                            buat QR otomatis.</p>
+                                    </div>
+                                    <button type="button" @click="activeModal = ''"
+                                        class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label class="block text-sm font-bold text-slate-700">Nama Dokumen <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="text" name="nama" value="{{ old('nama') }}" required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800"
+                                            placeholder="Contoh: SK Direksi 2024">
+                                        @if (old('_modal') == 'create')
+                                            @error('nama')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-700">Kategori <span
+                                                class="text-red-500">*</span></label>
+                                        <select name="category_id" required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800 appearance-none">
+                                            <option value="" disabled selected>-- Pilih Kategori --</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->nama_kategori }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if (old('_modal') == 'create')
+                                            @error('category_id')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-700">Entitas Perusahaan <span
+                                                class="text-red-500">*</span></label>
+                                        <select name="company_id" required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800 appearance-none">
+                                            <option value="" disabled selected>-- Pilih Entitas --</option>
+                                            @foreach ($companies as $company)
+                                                <option value="{{ $company->id }}"
+                                                    {{ old('company_id') == $company->id ? 'selected' : '' }}>
+                                                    {{ $company->nama_perusahaan }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if (old('_modal') == 'create')
+                                            @error('company_id')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-700">Status Dokumen <span
+                                                class="text-red-500">*</span></label>
+                                        <select name="status" required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800 appearance-none">
+                                            <option value="published"
+                                                {{ old('status') == 'published' ? 'selected' : '' }}>Terbitkan (Valid)
+                                            </option>
+                                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Simpan
+                                                sebagai Draft</option>
+                                        </select>
+                                        @if (old('_modal') == 'create')
+                                            @error('status')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label class="block text-sm font-bold text-slate-700">Unggah File (PDF/Image) <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="file" name="file" accept=".pdf,.png,.jpg,.jpeg" required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                                        <p class="text-xs text-slate-500 mt-1">Maksimal ukuran file 5MB.</p>
+                                        @if (old('_modal') == 'create')
+                                            @error('file')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label class="block text-sm font-bold text-slate-700">Deskripsi Ringkas</label>
+                                        <textarea name="deskripsi" rows="3" class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800"
+                                            placeholder="Keterangan opsional tentang dokumen ini...">{{ old('deskripsi') }}</textarea>
+                                        @if (old('_modal') == 'create')
+                                            @error('deskripsi')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse border-t border-slate-100">
+                                <button type="submit"
+                                    class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-indigo-700 hover:shadow-lg sm:ml-3 sm:w-auto transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    Terbitkan & Generate QR
+                                </button>
+                                <button type="button" @click="activeModal = ''"
+                                    class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection

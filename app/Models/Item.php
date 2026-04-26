@@ -21,6 +21,7 @@ class Item extends Model
         'category_id', // Kategori dokumen (misal: SK, Memo)
         'status',      // Status dokumen (draft, published, dll)
     ];
+    
 
     // --- ACCESSORS ---
 
