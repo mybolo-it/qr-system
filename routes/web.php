@@ -40,6 +40,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/kategori/{id}', [\App\Http\Controllers\CategoryController::class, 'update'])->name('admin.kategori.update');
     Route::delete('/admin/kategori/{id}', [\App\Http\Controllers\CategoryController::class, 'destroy'])->name('admin.kategori.destroy');
 
+    // Modul Manajemen Perusahaan
+    Route::get('/admin/perusahaan', [\App\Http\Controllers\CompanyController::class, 'index'])->name('admin.perusahaan.index');
+    Route::post('/admin/perusahaan', [\App\Http\Controllers\CompanyController::class, 'store'])->name('admin.perusahaan.store');
+    Route::put('/admin/perusahaan/{id}', [\App\Http\Controllers\CompanyController::class, 'update'])->name('admin.perusahaan.update');
+    Route::delete('/admin/perusahaan/{id}', [\App\Http\Controllers\CompanyController::class, 'destroy'])->name('admin.perusahaan.destroy');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

@@ -138,7 +138,7 @@
                                         <a href="{{ route('admin.kategori.index') }}"
                                             class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Kategori
                                             Dokumen</a>
-                                        <a href="#"
+                                        <a href="{{ route('admin.perusahaan.index') }}"
                                             class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Manajemen
                                             Perusahaan</a>
                                         <a href="{{ route('users.index') }}"
