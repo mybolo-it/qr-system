@@ -33,24 +33,34 @@ class PublicController extends Controller
     /**
      * Halaman detail item berdasarkan token (hasil scan QR)
      */
+    /**
+     * Halaman detail item berdasarkan token (hasil scan QR)
+     */
     public function show($token, Request $request)
     {
-        $item = Item::where('token', $token)->firstOrFail();
+        // Tambahkan relasi agar load data entitas & kategori lebih optimal
+        $item = Item::with(['company', 'category'])->where('token', $token)->firstOrFail();
 
-        // Keamanan: Cegah publik melihat dokumen yang sedang draft/dicabut meski punya URL-nya
-        if ($item->status !== 'published') {
-            abort(404, 'Dokumen tidak ditemukan atau tidak lagi berlaku.');
+        // Cek apakah pengunjung sedang login (Admin/HR)
+        $isAdmin = auth()->check();
+
+        // Logika Keamanan Smart Routing:
+        // Jika publik (guest), mereka HANYA boleh melihat dokumen 'published'
+        if (!$isAdmin && $item->status !== 'published') {
+            abort(404, 'Dokumen tidak ditemukan atau statusnya sudah dicabut/tidak berlaku.');
         }
 
-        // Catat riwayat scan/verifikasi ke tabel item_scan_logs yang sudah kita buat
-        $item->scanLogs()->create([
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
+        // Catat statistik HANYA jika yang men-scan adalah publik 
+        // (Agar view count tidak membengkak saat admin sedang mengecek/testing QR)
+        if (!$isAdmin) {
+            $item->scanLogs()->create([
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+            $item->increment('views');
+        }
 
-        // Increment total views (statistik ringan)
-        $item->increment('views');
-
-        return view('public.show', compact('item'));
+        // Lempar data ke view beserta status pengunjungnya
+        return view('public.show', compact('item', 'isAdmin'));
     }
 }

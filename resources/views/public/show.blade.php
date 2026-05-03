@@ -6,7 +6,6 @@
     <style>
         body {
             background-color: #f8fafc;
-            /* slate-50 */
         }
 
         .glass-card {
@@ -20,7 +19,6 @@
         .info-block {
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid #e2e8f0;
-            /* slate-200 */
             border-radius: 1rem;
             padding: 1.25rem;
             transition: all 0.3s ease;
@@ -28,7 +26,6 @@
 
         .info-block:hover {
             border-color: #c7d2fe;
-            /* indigo-200 */
             box-shadow: 0 4px 15px -3px rgba(99, 102, 241, 0.08);
             transform: translateY(-2px);
         }
@@ -36,14 +33,32 @@
 
     <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
 
-        <div class="mb-6 animate__animated animate__fadeInDown">
-            <a href="{{ route('home') }}"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 shadow-sm transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Kembali ke Beranda
-            </a>
+        <div class="mb-6 animate__animated animate__fadeInDown flex justify-between items-center">
+            @auth
+                <a href="{{ route('admin.arsip') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 shadow-sm transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Kembali ke Arsip Internal
+                </a>
+
+                <span class="text-xs font-bold bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                    Mode Admin (Testing)
+                </span>
+            @endauth
+
+            @guest
+                <a href="https://mybolo.id"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 hover:text-indigo-600 shadow-sm transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Portal Utama MyBolo
+                </a>
+            @endguest
         </div>
 
         <div class="glass-card rounded-[2rem] overflow-hidden animate__animated animate__fadeInUp">
@@ -59,7 +74,8 @@
 
                 <div class="relative z-10">
                     <div class="flex flex-wrap items-center gap-3 mb-5">
-                        @if ($item->status == 'published' || !isset($item->status))
+
+                        @if ($item->status == 'published')
                             <span
                                 class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-100 border border-emerald-400/30 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-sm">
                                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor"
@@ -67,7 +83,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                         d="M5 13l4 4L19 7" />
                                 </svg>
-                                Dokumen Valid
+                                Terverifikasi Valid
                             </span>
                         @elseif($item->status == 'revoked')
                             <span
@@ -76,16 +92,22 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                Dokumen Dicabut
+                                DOKUMEN DICABUT / TIDAK SAH
+                            </span>
+                        @elseif($item->status == 'draft')
+                            <span
+                                class="inline-flex items-center gap-1.5 bg-slate-500/50 text-slate-100 border border-slate-400/30 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-sm">
+                                <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                STATUS DRAFT
                             </span>
                         @endif
 
                         <span
                             class="inline-flex items-center gap-1 bg-white/10 text-white border border-white/20 text-[10px] font-mono px-3 py-1.5 rounded-full backdrop-blur-sm">
-                            <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-                            </svg>
                             ID: {{ substr($item->token, 0, 10) }}
                         </span>
                     </div>
@@ -93,51 +115,43 @@
                     <h1 class="text-3xl md:text-4xl font-extrabold leading-tight tracking-tight text-white mb-2">
                         {{ $item->nama }}
                     </h1>
-
                     <p class="text-indigo-200 text-sm md:text-base font-medium flex items-center gap-2">
-                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
                         Diterbitkan pada {{ $item->created_at->translatedFormat('d F Y') }}
                     </p>
                 </div>
             </div>
 
             <div class="p-6 md:p-10">
-
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="info-block">
                         <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Entitas</p>
                         <p class="text-sm font-extrabold text-slate-800 line-clamp-2">
-                            {{ $item->company ? $item->company->nama_perusahaan : 'PT Agung Putra Group' }}
-                        </p>
+                            {{ $item->company ? $item->company->nama_perusahaan : 'PT Agung Putra Group' }}</p>
                     </div>
                     <div class="info-block">
                         <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Kategori</p>
                         <p class="text-sm font-extrabold text-slate-800 line-clamp-2">
-                            {{ $item->category ? $item->category->nama_kategori : 'Dokumen Umum' }}
-                        </p>
+                            {{ $item->category ? $item->category->nama_kategori : 'Dokumen Umum' }}</p>
                     </div>
+
                     <div class="info-block">
-                        <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Status Data</p>
+                        <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Integritas Data</p>
                         <p class="text-sm font-extrabold text-emerald-600 flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Tersinkronisasi
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Aman
                         </p>
                     </div>
-                    <div class="info-block">
-                        <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Total Dilihat</p>
-                        <p class="text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            {{ $item->views }} Kali
-                        </p>
-                    </div>
+
+                    @auth
+                        <div class="info-block">
+                            <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Total Scan</p>
+                            <p class="text-sm font-extrabold text-indigo-600">{{ $item->views }} Kali</p>
+                        </div>
+                    @else
+                        <div class="info-block">
+                            <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Format</p>
+                            <p class="text-sm font-extrabold text-slate-800">Digital / PDF</p>
+                        </div>
+                    @endauth
                 </div>
 
                 <hr class="border-slate-100 mb-8">
@@ -162,16 +176,14 @@
                                 <div class="w-1.5 h-6 bg-purple-500 rounded-full"></div>
                                 <h3 class="text-lg font-extrabold text-slate-800">Keterangan Tambahan</h3>
                             </div>
-                            <p class="text-slate-600 leading-relaxed text-base bg-white">
-                                {{ $item->deskripsi }}
-                            </p>
+                            <p class="text-slate-600 leading-relaxed text-base bg-white">{{ $item->deskripsi }}</p>
                         </div>
                     @endif
                 </div>
 
                 <div class="mt-10 pt-8 border-t border-slate-100 flex justify-center">
-                    @if (isset($item->file_url) || isset($item->file_path))
-                        <a href="{{ $item->file_url ?? asset('storage/' . $item->file_path) }}" target="_blank"
+                    @if (isset($item->file_path))
+                        <a href="{{ route('document.file', $item->id) }}" target="_blank"
                             class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl overflow-hidden shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
                             <div
                                 class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]">
@@ -180,7 +192,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <span class="relative z-10">Lihat Lampiran Dokumen</span>
+                            <span class="relative z-10">Lihat Lampiran Asli</span>
                         </a>
                     @else
                         <div
@@ -196,9 +208,5 @@
 
             </div>
         </div>
-
-        <p class="mt-8 text-center text-slate-400 text-xs font-medium uppercase tracking-wider">
-            &copy; {{ date('Y') }} PT Agung Putra Group. All rights reserved.
-        </p>
     </div>
 @endsection

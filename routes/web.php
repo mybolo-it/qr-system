@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 
 // Halaman publik (item detail bisa diakses tanpa login)
 Route::get('/item/{token}', [PublicController::class, 'show'])->name('item.show');
+Route::get('/dokumen/file/{id}', [DocumentController::class, 'viewFile'])->name('document.file');
 
 // Halaman login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
