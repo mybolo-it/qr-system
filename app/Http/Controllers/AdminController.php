@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Item;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -54,5 +55,27 @@ class AdminController extends Controller
     {
         $items = Item::latest()->get();
         return view('admin.index', compact('items'));
+    }
+
+    public function downloadQr($id)
+    {
+        $item = Item::findOrFail($id);
+
+        // URL publik yang akan dimuat di dalam QR Code
+        $url = route('item.show', $item->token);
+
+        // Ubah format menjadi 'svg'. Ini TIDAK butuh ekstensi Imagick atau GD sama sekali.
+        $qrImage = QrCode::format('svg')->size(300)->margin(1)->generate($url);
+
+        // Memformat string nama agar tidak mengandung spasi dan simbol
+        $cleanName = preg_replace('/[^A-Za-z0-9]/', '', strtolower($item->nama));
+
+        // Ubah ekstensi file menjadi .svg
+        $fileName = 'qr_' . $cleanName . '.svg';
+
+        return response($qrImage)
+            // Pastikan Content-type disesuaikan menjadi MIME type milik SVG
+            ->header('Content-type', 'image/svg+xml')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 }

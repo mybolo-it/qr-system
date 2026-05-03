@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/form', [AdminController::class, 'showForm'])->name('admin.form');
     Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/items', [AdminController::class, 'index'])->name('admin.items');
+    Route::get('/admin/arsip/{id}/download-qr', [AdminController::class, 'downloadQr'])->name('admin.arsip.download-qr');
     Route::get('/admin/arsip', [DocumentController::class, 'index'])->name('admin.arsip');
     Route::delete('/admin/arsip/{id}', [DocumentController::class, 'destroy'])->name('admin.arsip.destroy');
 

@@ -57,17 +57,6 @@
                     Kembali ke Dashboard
                 </a>
             @endauth
-
-            @guest
-                <a href="https://mybolo.id"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 hover:text-indigo-600 shadow-sm transition-all w-full sm:w-auto justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Portal Utama MyBolo
-                </a>
-            @endguest
         </div>
 
         <div class="glass-card rounded-2xl md:rounded-[2rem] overflow-hidden animate__animated animate__fadeInUp">
@@ -87,31 +76,19 @@
                         @if ($item->status == 'published')
                             <span
                                 class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-100 border border-emerald-400/30 text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
+                                
                                 Terverifikasi Valid
                             </span>
                         @elseif($item->status == 'revoked')
                             <span
                                 class="inline-flex items-center gap-1.5 bg-rose-500/20 text-rose-100 border border-rose-400/30 text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                                <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                
                                 Tidak Sah / Dicabut
                             </span>
                         @elseif($item->status == 'draft')
                             <span
                                 class="inline-flex items-center gap-1.5 bg-slate-500/50 text-slate-100 border border-slate-400/30 text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                                <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                
                                 Status Draft
                             </span>
                         @endif

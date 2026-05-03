@@ -253,7 +253,7 @@
                             <th class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest">Terbit
                             </th>
                             <th
-                                class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center w-28">
+                                class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center w-36">
                                 Opsi</th>
                         </tr>
                     </thead>
@@ -268,7 +268,6 @@
                                     <div class="flex flex-col">
                                         <span
                                             class="font-bold text-slate-800 text-sm md:text-base">{{ $item->nama }}</span>
-                                        <!-- Menampilkan Nomor Surat -->
                                         <span class="text-xs font-bold text-indigo-600 mt-0.5">No:
                                             {{ $item->nomor_surat ?? 'Belum ada nomor' }}</span>
                                         <span
@@ -334,7 +333,6 @@
                                     <div class="flex items-center justify-center gap-2">
 
                                         @php
-                                            // Cek apakah file fisik ada di server
                                             $fileExists =
                                                 !empty($item->file_path) &&
                                                 \Illuminate\Support\Facades\Storage::disk('public')->exists(
@@ -356,7 +354,6 @@
                                                 </svg>
                                             </a>
                                         @else
-                                            <!-- Tampilan jika file tidak ada (disabled) -->
                                             <button type="button" disabled
                                                 class="p-2 bg-slate-50 text-slate-300 rounded-lg cursor-not-allowed"
                                                 title="Lampiran Tidak Tersedia">
@@ -376,6 +373,17 @@
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                            </svg>
+                                        </a>
+
+                                        <!-- Tombol Download QR (BARU) -->
+                                        <a href="{{ route('admin.arsip.download-qr', $item->id) }}"
+                                            class="p-2 bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg shadow-sm hover:shadow transition-all"
+                                            title="Unduh QR Code (PNG)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
                                         </a>
 
@@ -432,7 +440,6 @@
             role="dialog" aria-modal="true">
             <div x-show="activeModal === 'create'" x-transition.opacity
                 class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div x-show="activeModal === 'create'" x-transition:enter="ease-out duration-300"
