@@ -268,8 +268,12 @@
                                     <div class="flex flex-col">
                                         <span
                                             class="font-bold text-slate-800 text-sm md:text-base">{{ $item->nama }}</span>
+                                        <!-- Menampilkan Nomor Surat -->
+                                        <span class="text-xs font-bold text-indigo-600 mt-0.5">No:
+                                            {{ $item->nomor_surat ?? 'Belum ada nomor' }}</span>
                                         <span
                                             class="text-xs text-slate-500 mt-1 line-clamp-1 max-w-md">{{ $item->deskripsi }}</span>
+
                                         <div class="mt-2 flex items-center gap-2">
                                             <span
                                                 class="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-[10px] font-mono text-slate-600 border border-slate-200">
@@ -315,24 +319,56 @@
                                     @endif
                                 </td>
 
-                                <td data-label="Waktu" class="px-6 py-4 text-sm font-medium text-slate-500">
-                                    {{ $item->created_at->format('d M Y') }}
+                                <td data-label="Waktu" class="px-6 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-sm font-bold text-slate-700">
+                                            {{ $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('d M Y') : '-' }}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+                                            Diunggah: {{ $item->created_at->format('d/m/Y') }}
+                                        </span>
+                                    </div>
                                 </td>
 
                                 <td data-label="Opsi" class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ $item->file_url }}" target="_blank"
-                                            class="p-2 bg-slate-100 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                            title="Lihat Lampiran">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        </a>
 
+                                        @php
+                                            // Cek apakah file fisik ada di server
+                                            $fileExists =
+                                                !empty($item->file_path) &&
+                                                \Illuminate\Support\Facades\Storage::disk('public')->exists(
+                                                    $item->file_path,
+                                                );
+                                        @endphp
+
+                                        <!-- Tombol Lihat Lampiran -->
+                                        @if ($fileExists)
+                                            <a href="{{ route('document.file', $item->id) }}" target="_blank"
+                                                class="p-2 bg-slate-100 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                title="Lihat Lampiran">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <!-- Tampilan jika file tidak ada (disabled) -->
+                                            <button type="button" disabled
+                                                class="p-2 bg-slate-50 text-slate-300 rounded-lg cursor-not-allowed"
+                                                title="Lampiran Tidak Tersedia">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                                </svg>
+                                            </button>
+                                        @endif
+
+                                        <!-- Tombol Verifikasi QR -->
                                         <a href="{{ route('item.show', $item->token) }}" target="_blank"
                                             class="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg shadow-sm hover:shadow transition-all"
                                             title="Verifikasi QR">
@@ -343,6 +379,7 @@
                                             </svg>
                                         </a>
 
+                                        <!-- Tombol Hapus -->
                                         @if (auth()->user()->isAdmin() || auth()->user()->isGlobalHR())
                                             <form action="{{ route('admin.arsip.destroy', $item->id) }}" method="POST"
                                                 class="inline-block"
@@ -436,6 +473,33 @@
                                             placeholder="Contoh: SK Direksi 2024">
                                         @if (old('_modal') == 'create')
                                             @error('nama')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label class="block text-sm font-bold text-slate-700">Nomor Surat <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="text" name="nomor_surat" value="{{ old('nomor_surat') }}"
+                                            required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800"
+                                            placeholder="Contoh: 001/SK/APG/2026">
+                                        @if (old('_modal') == 'create')
+                                            @error('nomor_surat')
+                                                <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
+                                            @enderror
+                                        @endif
+                                    </div>
+
+                                    <div class="space-y-2 md:col-span-2">
+                                        <label class="block text-sm font-bold text-slate-700">Tanggal Surat <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="date" name="tanggal_surat" value="{{ old('tanggal_surat') }}"
+                                            required
+                                            class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                        @if (old('_modal') == 'create')
+                                            @error('tanggal_surat')
                                                 <p class="text-red-500 text-xs font-semibold">{{ $message }}</p>
                                             @enderror
                                         @endif

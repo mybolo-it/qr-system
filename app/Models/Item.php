@@ -12,14 +12,16 @@ class Item extends Model
     // Kolom yang dapat diisi secara massal
     protected $fillable = [
         'nama',
+        'nomor_surat',     // Kolom baru
+        'tanggal_surat',   // Kolom baru
         'deskripsi',
         'file_path',
         'letterhead',
         'token',
         'views',
-        'company_id',  // Relasi ke anak perusahaan yang menerbitkan dokumen
-        'category_id', // Kategori dokumen (misal: SK, Memo)
-        'status',      // Status dokumen (draft, published, dll)
+        'company_id',
+        'category_id',
+        'status'
     ];
     
 

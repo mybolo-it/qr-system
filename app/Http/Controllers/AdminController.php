@@ -18,6 +18,8 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
+            'nomor_surat'   => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
             'category_id' => 'required|exists:categories,id',
             'company_id' => 'required|exists:companies,id',
             'status' => 'required|in:published,draft,revoked', // Validasi status
@@ -33,6 +35,8 @@ class AdminController extends Controller
 
         \App\Models\Item::create([
             'nama' => $request->nama,
+            'nomor_surat'   => $request->nomor_surat,
+            'tanggal_surat' => $request->tanggal_surat,
             'category_id' => $request->category_id,
             'company_id' => $request->company_id,
             'status' => $request->status, // Simpan status ke database

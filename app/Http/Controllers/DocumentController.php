@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
 class DocumentController extends Controller
 {
     public function index(Request $request)
@@ -68,5 +69,30 @@ class DocumentController extends Controller
                 ->route('admin.arsip')
                 ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Menampilkan file lampiran secara aman (Bypass Symlink)
+     */
+    public function viewFile($id)
+    {
+        $item = Item::findOrFail($id);
+
+        // LOGIKA KEAMANAN: 
+        // Jika yang membuka bukan admin (publik) DAN dokumen tidak valid/dicabut, blokir aksesnya.
+        if (!auth()->check() && $item->status !== 'published') {
+            abort(403, 'Akses ditolak: File ini tidak tersedia untuk publik atau telah dicabut.');
+        }
+
+        // Cari lokasi fisik file di dalam server
+        $filePath = storage_path('app/public/' . $item->file_path);
+
+        // Pastikan file benar-benar ada di folder
+        if (!file_exists($filePath)) {
+            abort(404, 'File lampiran fisik tidak ditemukan di server.');
+        }
+
+        // Tampilkan file PDF/Gambar langsung di dalam browser
+        return response()->file($filePath);
     }
 }
