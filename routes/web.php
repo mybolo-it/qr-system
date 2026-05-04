@@ -33,8 +33,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/items', [AdminController::class, 'index'])->name('admin.items');
     Route::get('/admin/arsip/{id}/download-qr', [AdminController::class, 'downloadQr'])->name('admin.arsip.download-qr');
-    Route::get('/admin/arsip', [DocumentController::class, 'index'])->name('admin.arsip');
-    Route::delete('/admin/arsip/{id}', [DocumentController::class, 'destroy'])->name('admin.arsip.destroy');
+    Route::delete('/admin/arsip/bulk-destroy', [AdminController::class, 'bulkDestroy'])->name('admin.arsip.bulk-destroy');
+    Route::get('/admin/arsip', [AdminController::class, 'arsip'])->name('admin.arsip');
+    Route::delete('/admin/arsip/{id}', [AdminController::class, 'destroy'])->name('admin.arsip.destroy');
 
     // Modul Kategori Dokumen
     Route::get('/admin/kategori', [\App\Http\Controllers\CategoryController::class, 'index'])->name('admin.kategori.index');

@@ -116,7 +116,8 @@
                         <a href="{{ route('admin.arsip') }}"
                             class="nav-link text-sm font-semibold text-slate-600 hover:text-indigo-600">Arsip Dokumen</a>
 
-                        @if (auth()->user()->isAdmin() || auth()->user()->isGlobalHR())
+                        {{-- HANYA Superadmin & HR Global yang bisa melihat menu Manajemen --}}
+                        @if (auth()->user()->role === 'superadmin' || auth()->user()->role === 'hr_global')
                             <div class="relative">
                                 <button @click="manageOpen = !manageOpen" @click.outside="manageOpen = false"
                                     class="flex items-center gap-1 nav-link text-sm font-semibold text-slate-600 hover:text-indigo-600 focus:outline-none">
@@ -131,28 +132,23 @@
 
                                 <div x-show="manageOpen" x-transition x-cloak
                                     class="absolute top-full mt-4 right-0 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 overflow-hidden z-50">
-                                  
 
-                                    @if (auth()->user()->isGlobalHR())
-                                        <div class="h-px bg-slate-100 my-1 mx-4"></div>
-                                        <a href="{{ route('admin.kategori.index') }}"
-                                            class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Kategori
-                                            Dokumen</a>
-                                        <a href="{{ route('admin.perusahaan.index') }}"
-                                            class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Manajemen
-                                            Perusahaan</a>
-                                        <a href="{{ route('users.index') }}"
-                                            class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Pengguna
-                                            Akses</a>
-                                    @endif
+                                    <a href="{{ route('admin.form') }}"
+                                        class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Penerbitan
+                                        Dokumen</a>
+
+                                    <div class="h-px bg-slate-100 my-1 mx-4"></div>
+                                    <a href="{{ route('admin.kategori.index') }}"
+                                        class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Kategori
+                                        Dokumen</a>
+                                    <a href="{{ route('admin.perusahaan.index') }}"
+                                        class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Manajemen
+                                        Perusahaan</a>
+                                    <a href="{{ route('users.index') }}"
+                                        class="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Pengguna
+                                        Akses</a>
                                 </div>
                             </div>
-                        @endif
-
-                        @if (auth()->user()->isGlobalHR() || auth()->user()->isAdmin() || auth()->user()->isGM() || auth()->user()->isManager())
-                            <a href="#"
-                                class="nav-link text-sm font-semibold text-slate-600 hover:text-indigo-600">Laporan & Audit
-                                Log</a>
                         @endif
 
                         <div class="h-6 w-px bg-slate-200 mx-2"></div>
@@ -215,24 +211,17 @@
                             class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Arsip
                             Dokumen</a>
 
-                        @if (auth()->user()->isAdmin() || auth()->user()->isGlobalHR())
+                        {{-- HANYA Superadmin & HR Global --}}
+                        @if (auth()->user()->role === 'superadmin' || auth()->user()->role === 'hr_global')
                             <a href="{{ route('admin.form') }}"
                                 class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Penerbitan
                                 Dokumen</a>
-                            @if (auth()->user()->isGlobalHR())
-                                <a href="#"
-                                    class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Kategori
-                                    & Perusahaan</a>
-                                <a href="{{ route('users.index') }}"
-                                    class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Manajemen
-                                    Pengguna</a>
-                            @endif
-                        @endif
-
-                        @if (auth()->user()->isGlobalHR() || auth()->user()->isAdmin() || auth()->user()->isGM() || auth()->user()->isManager())
-                            <a href="#"
-                                class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Laporan
-                                & Log</a>
+                            <a href="{{ route('admin.kategori.index') }}"
+                                class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Kategori
+                                & Perusahaan</a>
+                            <a href="{{ route('users.index') }}"
+                                class="flex justify-start text-slate-600 font-bold py-3 border-b border-slate-50 hover:text-indigo-600 hover:pl-2 transition-all">Manajemen
+                                Pengguna</a>
                         @endif
 
                         <a href="{{ route('profile.edit') }}"
@@ -272,11 +261,17 @@
                     <img src="{{ asset('img/logo.png') }}" class="h-5 opacity-40 grayscale" alt="Logo">
                     <span>&copy; {{ date('Y') }} Divisi IT PT Agung Putra Group. All rights reserved.</span>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="hover:text-indigo-600 transition-colors">Panduan Sistem</a>
-                    <a href="#" class="hover:text-indigo-600 transition-colors">Kebijakan Keamanan</a>
-                    <a href="#" class="hover:text-indigo-600 transition-colors">IT Helpdesk</a>
-                </div>
+
+                @auth
+                    <div class="flex items-center text-slate-500 font-semibold tracking-wide">
+                        <span>{{ auth()->user()->email }}</span>
+                        <span class="mx-3 text-slate-300">|</span>
+                        <span class="text-indigo-600">
+                            {{ auth()->user()->company ? auth()->user()->company->nama_perusahaan : 'Kantor Pusat (Holding)' }}
+                        </span>
+                    </div>
+                @endauth
+
             </div>
         </div>
     </footer>

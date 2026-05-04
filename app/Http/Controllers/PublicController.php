@@ -12,27 +12,38 @@ class PublicController extends Controller
      */
     public function dashboard(Request $request)
     {
-        $items = Item::query()
+        // 1. Inisiasi Query Dasar
+        $query = Item::query()
             // Keamanan: Pastikan hanya dokumen dengan status 'published' yang tampil di publik
-            ->where('status', 'published')
+            ->where('status', 'published');
 
-            // Logika Pencarian
-            ->when($request->search, function ($query, $search) {
-                // Dibungkus closure agar 'OR' tidak mengganggu kondisi 'status = published'
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama', 'like', "%{$search}%")
-                        ->orWhere('deskripsi', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->get();
+        // 2. Logika Otorisasi (Jika user sedang login)
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // Jika role adalah company_admin atau staff, kunci data hanya untuk perusahaannya saja
+            if ($user->role === 'company_admin' || $user->role === 'staff') {
+                $query->where('company_id', $user->company_id);
+            }
+            // Catatan: superadmin dan hr_global akan melewati blok if ini 
+            // sehingga tetap bisa melihat semua dokumen published.
+        }
+
+        // 3. Logika Pencarian
+        $query->when($request->search, function ($q, $search) {
+            // Dibungkus closure agar 'OR' tidak mengganggu kondisi sebelumnya (status/company_id)
+            $q->where(function ($subQ) use ($search) {
+                $subQ->where('nama', 'like', "%{$search}%")
+                    ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        });
+
+        // 4. Eksekusi Query
+        $items = $query->latest()->get();
 
         return view('public.dashboard', compact('items'));
     }
 
-    /**
-     * Halaman detail item berdasarkan token (hasil scan QR)
-     */
     /**
      * Halaman detail item berdasarkan token (hasil scan QR)
      */
