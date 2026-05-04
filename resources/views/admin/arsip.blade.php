@@ -522,8 +522,8 @@
                                         </select>
                                     </div>
                                     <div class="space-y-2 md:col-span-2">
-                                        <label class="block text-sm font-bold text-slate-700">Lampiran Surat (Opsional)<span
-                                                class="text-red-500">*</span></label>
+                                        <label class="block text-sm font-bold text-slate-700">Lampiran Surat
+                                            (Opsional)</label>
                                         <input type="file" name="file"
                                             class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-600">
                                     </div>
