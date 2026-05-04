@@ -78,11 +78,11 @@ class AdminController extends Controller
             'category_id'   => 'required|exists:categories,id',
             'company_id'    => 'required|exists:companies,id',
             'status'        => 'required|in:published,draft,revoked',
-            'file'          => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120',
+            'file'          => 'nullable|file|mimes:pdf,png,jpg,jpeg|max:5120',
             'deskripsi'     => 'nullable|string',
         ]);
 
-        $path = $request->file('file')->store('uploads', 'public');
+        $path = $request->file('file') ? $request->file('file')->store('uploads', 'public') : null;
 
         do {
             $token = Str::random(32);
