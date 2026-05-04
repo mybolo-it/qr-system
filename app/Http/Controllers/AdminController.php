@@ -15,7 +15,7 @@ class AdminController extends Controller
     public function arsip(Request $request)
     {
         $user = auth()->user();
-       
+
         // 1. Inisiasi Query Dasar
         $query = Item::with(['company', 'category']);
 
@@ -120,6 +120,59 @@ class AdminController extends Controller
             ->with('new_item', $newDocumentData);
     }
 
+    // FUNGSI BARU: UPDATE DOKUMEN
+    public function update(Request $request, $id)
+    {
+        $user = auth()->user();
+        $item = Item::findOrFail($id);
+
+        // Cek otorisasi
+        if ($user->role !== 'superadmin' && $user->role !== 'hr_global' && $item->company_id !== $user->company_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Pengamanan company_id untuk update
+        if ($user->role !== 'superadmin' && $user->role !== 'hr_global') {
+            $request->merge([
+                'company_id' => $user->company_id
+            ]);
+        }
+
+        $request->validate([
+            'nama'          => 'required|string|max:255',
+            'nomor_surat'   => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
+            'category_id'   => 'required|exists:categories,id',
+            'company_id'    => 'required|exists:companies,id',
+            'status'        => 'required|in:published,draft,revoked',
+            'file'          => 'nullable|file|mimes:pdf,png,jpg,jpeg|max:5120',
+            'deskripsi'     => 'nullable|string',
+        ]);
+
+        // Cek jika ada file baru yang diunggah
+        if ($request->hasFile('file')) {
+            // Hapus file lama jika ada
+            if ($item->file_path && Storage::disk('public')->exists($item->file_path)) {
+                Storage::disk('public')->delete($item->file_path);
+            }
+            // Simpan file baru
+            $item->file_path = $request->file('file')->store('uploads', 'public');
+        }
+
+        // Update data text
+        $item->nama = $request->nama;
+        $item->nomor_surat = $request->nomor_surat;
+        $item->tanggal_surat = $request->tanggal_surat;
+        $item->category_id = $request->category_id;
+        $item->company_id = $request->company_id;
+        $item->status = $request->status;
+        $item->deskripsi = $request->deskripsi;
+
+        $item->save();
+
+        return redirect()->route('admin.arsip')->with('success', 'Arsip dokumen berhasil diperbarui.');
+    }
+
     public function destroy($id)
     {
         $user = auth()->user();
@@ -138,7 +191,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Arsip dokumen berhasil dihapus permanen.');
     }
 
-    // FUNGSI BARU: Menghapus Banyak Dokumen Sekaligus
     public function bulkDestroy(Request $request)
     {
         $user = auth()->user();
@@ -151,9 +203,8 @@ class AdminController extends Controller
         $items = Item::whereIn('id', $request->ids)->get();
 
         foreach ($items as $item) {
-            // Cek otorisasi untuk masing-masing item
             if ($user->role !== 'superadmin' && $user->role !== 'hr_global' && $item->company_id !== $user->company_id) {
-                continue; // Lewati jika mencoba hapus dokumen perusahaan lain
+                continue;
             }
 
             if ($item->file_path && Storage::disk('public')->exists($item->file_path)) {
@@ -175,9 +226,7 @@ class AdminController extends Controller
         }
 
         $url = route('item.show', $item->token);
-
         $qrImage = QrCode::format('svg')->size(300)->margin(1)->generate($url);
-
         $cleanName = preg_replace('/[^A-Za-z0-9]/', '', strtolower($item->nama));
         $fileName = 'qr_' . $cleanName . '.svg';
 

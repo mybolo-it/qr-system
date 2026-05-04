@@ -139,7 +139,7 @@
         }
     }">
 
-        <!-- Notifikasi Sukses via Session (Opsional/Jika Toast aktif) -->
+        <!-- Notifikasi Sukses -->
         @if (session('success') && !session('new_item'))
             <div
                 class="mb-4 p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200 text-sm font-bold flex items-center gap-3 animate__animated animate__fadeIn">
@@ -202,11 +202,12 @@
                 <div class="lg:col-span-2">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pencarian</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg
-                                class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg></div>
+                            </svg>
+                        </div>
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Cari nama, nomor, atau token..."
                             class="w-full pl-10 pr-4 py-2.5 form-input-glass rounded-xl text-sm text-slate-700">
@@ -220,7 +221,8 @@
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}"
                                 {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->nama_kategori }}</option>
+                                {{ $category->nama_kategori }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -234,7 +236,8 @@
                             @foreach ($companies as $company)
                                 <option value="{{ $company->id }}"
                                     {{ request('company_id') == $company->id ? 'selected' : '' }}>
-                                    {{ $company->nama_perusahaan }} ({{ $company->kode_perusahaan }})</option>
+                                    {{ $company->nama_perusahaan }} ({{ $company->kode_perusahaan }})
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -248,19 +251,21 @@
                     <div class="flex items-end gap-1">
                         <button type="submit"
                             class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-colors"
-                            title="Terapkan Filter"><svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            title="Terapkan Filter">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                            </svg></button>
+                            </svg>
+                        </button>
                         @if (request()->anyFilled(['search', 'category_id', 'company_id', 'tanggal']))
                             <a href="{{ route('admin.arsip') }}"
                                 class="p-2.5 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-xl transition-colors"
-                                title="Reset Filter"><svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                title="Reset Filter">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
-                                </svg></a>
+                                </svg>
+                            </a>
                         @endif
                     </div>
                 </div>
@@ -272,7 +277,6 @@
             @csrf
             @method('DELETE')
 
-            <!-- Aksi Massal Menu -->
             <div x-show="selectedItems.length > 0" x-transition.opacity
                 class="mb-4 p-3 bg-white border border-rose-200 rounded-2xl shadow-sm flex items-center justify-between"
                 style="display: none;">
@@ -286,7 +290,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Hapus Dokumen Terpilih
+                    Hapus Dokumen
                 </button>
             </div>
 
@@ -302,34 +306,28 @@
                                         class="custom-checkbox">
                                 </th>
                                 <th class="px-2 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest w-16">
-                                    ID
-                                </th>
+                                    ID</th>
                                 <th class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                                    Detail Dokumen
-                                </th>
-
-                                {{-- Penyesuaian Header: Sembunyikan kata "Entitas" untuk company_admin --}}
+                                    Detail Dokumen</th>
                                 @if (auth()->user()->role === 'superadmin' || auth()->user()->role === 'hr_global')
                                     <th class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                                        Entitas & Kategori
-                                    </th>
+                                        Entitas & Kategori</th>
                                 @else
                                     <th class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                                        Kategori
-                                    </th>
+                                        Kategori</th>
                                 @endif
-
                                 <th
                                     class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center">
-                                    Status
-                                </th>
-                                <th class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                                    Terbit
-                                </th>
+                                    Status</th>
                                 <th
-                                    class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center w-36">
-                                    Opsi
-                                </th>
+                                    class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center">
+                                    Tanggal Dibuat</th>
+                                <th
+                                    class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center">
+                                    Tanggal Update</th>
+                                <th
+                                    class="px-6 py-4 text-xs font-extrabold text-slate-500 uppercase tracking-widest text-center w-40">
+                                    Opsi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -352,8 +350,6 @@
                                                 class="text-xs text-slate-500 mt-1 line-clamp-1 max-w-md">{{ $item->deskripsi }}</span>
                                         </div>
                                     </td>
-
-                                    {{-- Penyesuaian Data: Sembunyikan badge nama perusahaan untuk company_admin --}}
                                     <td data-label="Klasifikasi" class="px-6 py-4">
                                         <div class="flex flex-col gap-1.5 items-start">
                                             @if (auth()->user()->role === 'superadmin' || auth()->user()->role === 'hr_global')
@@ -367,7 +363,6 @@
                                             </span>
                                         </div>
                                     </td>
-
                                     <td data-label="Status" class="px-6 py-4 text-center">
                                         @if ($item->status == 'published')
                                             <span
@@ -383,14 +378,31 @@
                                                     class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Cabut</span>
                                         @endif
                                     </td>
-                                    <td data-label="Waktu" class="px-6 py-4">
-                                        <div class="flex flex-col gap-1">
-                                            <span
-                                                class="text-sm font-bold text-slate-700">{{ $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('d M Y') : '-' }}</span>
-                                        </div>
+                                    <td data-label="Tanggal Dibuat" class="px-6 py-4 text-center">
+                                        <span
+                                            class="text-sm font-bold text-slate-700">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</span>
+                                        <span
+                                            class="block text-xs text-slate-500">{{ $item->created_at ? $item->created_at->format('H:i') : '-' }}</span>
+                                    </td>
+                                    <td data-label="Tanggal Update" class="px-6 py-4 text-center">
+                                        <span
+                                            class="text-sm font-bold text-slate-700">{{ $item->updated_at ? $item->updated_at->format('d M Y') : '-' }}</span>
+                                        <span
+                                            class="block text-xs text-slate-500">{{ $item->updated_at ? $item->updated_at->format('H:i') : '-' }}</span>
                                     </td>
                                     <td data-label="Opsi" class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
+                                            <!-- Tombol Edit -->
+                                            <button type="button" @click="activeModal = 'edit-{{ $item->id }}'"
+                                                class="p-2 bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white rounded-lg shadow-sm hover:shadow transition-all"
+                                                title="Edit Dokumen">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+
                                             <a href="{{ route('item.show', $item->token) }}" target="_blank"
                                                 class="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg shadow-sm hover:shadow transition-all"
                                                 title="Verifikasi QR">
@@ -414,7 +426,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-16 text-center">
+                                    <td colspan="8" class="px-6 py-16 text-center">
                                         <div class="flex flex-col items-center justify-center">
                                             <svg class="w-12 h-12 text-slate-300 mb-3" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -464,7 +476,6 @@
                                         </svg></button>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <!-- Field Input Create (Diringkas agar tetap sama) -->
                                     <div class="space-y-2 md:col-span-2">
                                         <label class="block text-sm font-bold text-slate-700">Nama Dokumen <span
                                                 class="text-red-500">*</span></label>
@@ -546,7 +557,134 @@
             </div>
         </div>
 
-        <!-- FUNGSI BARU: MODAL SUKSES & TAMPIL QR CODE -->
+        <!-- LOOPING MODAL FORM EDIT -->
+        @foreach ($items as $item)
+            <div x-show="activeModal === 'edit-{{ $item->id }}'" x-cloak class="relative z-[100]"
+                aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div x-show="activeModal === 'edit-{{ $item->id }}'" x-transition.opacity
+                    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+                <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                        <div x-show="activeModal === 'edit-{{ $item->id }}'"
+                            x-transition:enter="ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                            class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-3xl border border-slate-200">
+
+                            <form action="{{ route('admin.arsip.update', $item->id) }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="_modal" value="edit-{{ $item->id }}">
+
+                                <div class="bg-white px-6 pb-4 pt-6 sm:p-8">
+                                    <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                                        <div>
+                                            <h3 class="text-xl font-extrabold text-slate-800">Edit Dokumen
+                                                #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}</h3>
+                                            <p class="text-sm text-slate-500 mt-1">Ubah rincian, status, atau perbarui
+                                                lampiran file.</p>
+                                        </div>
+                                        <button type="button" @click="activeModal = ''"
+                                            class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors"><svg
+                                                class="h-5 w-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg></button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Nama Dokumen <span
+                                                    class="text-red-500">*</span></label>
+                                            <input type="text" name="nama" value="{{ old('nama', $item->nama) }}"
+                                                required
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                        </div>
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Nomor Surat <span
+                                                    class="text-red-500">*</span></label>
+                                            <input type="text" name="nomor_surat"
+                                                value="{{ old('nomor_surat', $item->nomor_surat) }}" required
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                        </div>
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Tanggal Surat <span
+                                                    class="text-red-500">*</span></label>
+                                            <input type="date" name="tanggal_surat"
+                                                value="{{ old('tanggal_surat', $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('Y-m-d') : '') }}"
+                                                required
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-bold text-slate-700">Kategori <span
+                                                    class="text-red-500">*</span></label>
+                                            <select name="category_id" required
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}"
+                                                        {{ $item->category_id == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->nama_kategori }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @if (auth()->user()->role === 'superadmin' || auth()->user()->role === 'hr_global')
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-bold text-slate-700">Entitas Perusahaan
+                                                    <span class="text-red-500">*</span></label>
+                                                <select name="company_id" required
+                                                    class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                                    @foreach ($companies as $company)
+                                                        <option value="{{ $company->id }}"
+                                                            {{ $item->company_id == $company->id ? 'selected' : '' }}>
+                                                            {{ $company->nama_perusahaan }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @endif
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Status <span
+                                                    class="text-red-500">*</span></label>
+                                            <select name="status" required
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">
+                                                <option value="published"
+                                                    {{ $item->status == 'published' ? 'selected' : '' }}>Terbitkan (Valid)
+                                                </option>
+                                                <option value="draft" {{ $item->status == 'draft' ? 'selected' : '' }}>
+                                                    Draft</option>
+                                                <option value="revoked"
+                                                    {{ $item->status == 'revoked' ? 'selected' : '' }}>Cabut / Tidak Sah
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Ganti Lampiran File <span
+                                                    class="text-xs font-normal text-slate-400 ml-2">(Biarkan kosong jika
+                                                    tidak diganti)</span></label>
+                                            <input type="file" name="file"
+                                                class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-600">
+                                        </div>
+                                        <div class="space-y-2 md:col-span-2">
+                                            <label class="block text-sm font-bold text-slate-700">Deskripsi</label>
+                                            <textarea name="deskripsi" class="w-full px-4 py-3 form-input-glass rounded-xl text-sm text-slate-800">{{ old('deskripsi', $item->deskripsi) }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse border-t border-slate-100">
+                                    <button type="submit"
+                                        class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-amber-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-amber-700 sm:ml-3 sm:w-auto">Simpan
+                                        Perubahan</button>
+                                    <button type="button" @click="activeModal = ''"
+                                        class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto">Batal</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+        <!-- MODAL SUKSES & TAMPIL QR CODE -->
         @if (session('new_item'))
             <div x-show="showSuccessModal" x-cloak class="relative z-[150]" aria-labelledby="modal-title" role="dialog"
                 aria-modal="true">
@@ -558,7 +696,6 @@
                             x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
                             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                             class="relative transform overflow-hidden rounded-[2rem] bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-200">
-
                             <div
                                 class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-6 py-8 text-center text-white relative overflow-hidden">
                                 <div class="absolute -right-10 -top-10 opacity-20"><svg width="150" height="150"
@@ -576,19 +713,15 @@
                                 <h3 class="text-2xl font-extrabold mb-1">Terbit Sukses!</h3>
                                 <p class="text-indigo-100 text-sm font-medium">Dokumen terdaftar resmi di dalam sistem</p>
                             </div>
-
                             <div class="px-6 py-8 text-center">
                                 <div
                                     class="bg-slate-50 p-4 rounded-2xl border border-slate-100 inline-block mb-6 shadow-sm">
-                                    <!-- Tampil Gambar Base64 SVG dari Controller -->
                                     <img src="data:image/svg+xml;base64,{{ session('new_item.qr_base64') }}"
                                         alt="QR Code Validasi" class="w-40 h-40 mx-auto">
                                 </div>
-
                                 <h4 class="text-lg font-bold text-slate-800 mb-1">{{ session('new_item.nama') }}</h4>
                                 <p class="text-sm font-bold text-indigo-600 mb-4">{{ session('new_item.nomor_surat') }}
                                 </p>
-
                                 <div
                                     class="bg-indigo-50 text-indigo-700 text-sm p-4 rounded-xl text-left border border-indigo-100 mb-6 leading-relaxed">
                                     <strong class="font-bold">Pernyataan:</strong> Surat ini telah dienkripsi dan memiliki
@@ -596,7 +729,6 @@
                                     pada QR Code ini akan mengarahkan pihak terkait untuk memverifikasi keaslian dokumen
                                     secara langsung (Validasi Digital).
                                 </div>
-
                                 <div class="flex flex-col gap-3">
                                     <a href="{{ route('admin.arsip.download-qr', session('new_item.id')) }}"
                                         class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all active:scale-95">

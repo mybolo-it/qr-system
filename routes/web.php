@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/items', [AdminController::class, 'index'])->name('admin.items');
     Route::get('/admin/arsip/{id}/download-qr', [AdminController::class, 'downloadQr'])->name('admin.arsip.download-qr');
     Route::delete('/admin/arsip/bulk-destroy', [AdminController::class, 'bulkDestroy'])->name('admin.arsip.bulk-destroy');
+    Route::put('/admin/arsip/{id}', [AdminController::class, 'update'])->name('admin.arsip.update');
     Route::get('/admin/arsip', [AdminController::class, 'arsip'])->name('admin.arsip');
     Route::delete('/admin/arsip/{id}', [AdminController::class, 'destroy'])->name('admin.arsip.destroy');
 
