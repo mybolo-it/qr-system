@@ -107,15 +107,16 @@
                 </div>
                 <div class="relative z-10 text-white">
                     <p class="text-sm font-medium text-indigo-200 mb-1">Akses Sistem</p>
-                    <h3 class="text-lg font-bold leading-tight">Masuk sebagai Admin?</h3>
+                    @auth
+                        <div class="flex items-center text-indigo-200 font-semibold tracking-wide">
+                            <span>{{ auth()->user()->email }}</span>
+                            <span class="mx-3 text-indigo-200">|</span>
+                            <span class="text-indigo-200">
+                                {{ auth()->user()->company ? auth()->user()->company->nama_perusahaan : 'HR Agung Putra Group' }}
+                            </span>
+                        </div>
+                    @endauth
                 </div>
-                <a href="{{ route('login') }}"
-                    class="relative z-10 p-3 bg-white/20 hover:bg-white text-white hover:text-indigo-600 rounded-xl backdrop-blur-md transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </a>
             </div>
         </div>
 
