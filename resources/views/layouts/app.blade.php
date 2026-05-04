@@ -267,7 +267,7 @@
                         <span>{{ auth()->user()->email }}</span>
                         <span class="mx-3 text-slate-300">|</span>
                         <span class="text-indigo-600">
-                            {{ auth()->user()->company ? auth()->user()->company->nama_perusahaan : 'Kantor Pusat (Holding)' }}
+                            {{ auth()->user()->company ? auth()->user()->company->nama_perusahaan : 'PT Agung Putra Group' }}
                         </span>
                     </div>
                 @endauth
