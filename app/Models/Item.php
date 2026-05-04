@@ -12,8 +12,8 @@ class Item extends Model
     // Kolom yang dapat diisi secara massal
     protected $fillable = [
         'nama',
-        'nomor_surat',     // Kolom baru
-        'tanggal_surat',   // Kolom baru
+        'nomor_surat',     
+        'tanggal_surat',   
         'deskripsi',
         'file_path',
         'letterhead',
