@@ -13,8 +13,11 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Ambil data user beserta relasinya jika ada (opsional tapi disarankan)
-        $users = User::with('company')->latest()->paginate(10);
+        // Ambil data user kecuali akun maintenance (ID: 9)
+        $users = User::with('company')
+            ->where('id', '!=', 9) // Mengecualikan akun maintenance
+            ->latest()
+            ->paginate(10);
 
         // Ambil data master perusahaan untuk mengisi dropdown
         $companies = Company::all();
